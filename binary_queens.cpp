@@ -13,12 +13,16 @@ public:
 
         // Start values
         for (int i = 0; i < opt.size(); ++i) {
-            rel(*this, matrix(i, 0), IRT_EQ, 1);
+            for (int j = 0; j < opt.size();++j) {
+                dom(*this, matrix(i, j), 0, 1);
+            }
+            // rel(*this, matrix(i, 0), IRT_EQ, 1);
         }
 
         // Distinct col
         for (int i = 0; i < opt.size(); ++i) {
-            distinct(*this, matrix.col(i), ICL_DEF);
+            count(*this, matrix.col(i), 1, IRT_EQ, 1);
+            count(*this, matrix.row(i), 1, IRT_EQ, 1);
         }
        
         // Diagonal
@@ -50,7 +54,7 @@ public:
 int main(int argc, char* argv[]) {
     SizeOptions opt("Queens");
     //opt.iterations(500);
-    opt.size(100);
+    opt.size(10);
     //opt.propagation(Queens::PROP_DISTINCT);
     //opt.propagation(Queens::PROP_BINARY, "binary", "only binary disequality constraints");
     //opt.propagation(Queens::PROP_MIXED, "mixed", "single distinct and binary disequality constraints");

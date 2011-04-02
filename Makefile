@@ -5,3 +5,6 @@ sudoku: sudoku.cpp
 
 queens: queens.cpp
 	g++ $(options) queens.cpp -o queens
+
+binary_queens: binary_queens.cpp
+	g++ $(options) binary_queens.cpp -o binary_queens
