@@ -1,6 +1,7 @@
 #include <gecode/int.hh>
 #include <gecode/search.hh>
 #include <gecode/minimodel.hh>
+#include <gecode/driver.hh>
 
 using namespace Gecode;
 
@@ -206,13 +207,13 @@ static int examples[18][9][9] = {
 };
 
 
-class Sudoku : public Space {
+class Sudoku : public Script {
 protected:
-    int example_id;
     IntVarArray l;
 
 public:
-    Sudoku(int example_id) : example_id(example_id), l(*this, 81, 1, 9) {
+    Sudoku(const SizeOptions & opt) : l(*this, 81, 1, 9) {
+        int example_id = opt.size();
         Matrix<IntVarArray> matrix(l, 9, 9);
 
         // Predefined values
@@ -226,14 +227,14 @@ public:
 
         // Row and Col
         for (int i = 0; i < 9; ++i) {
-            distinct(*this, matrix.row(i), ICL_DEF);
-            distinct(*this, matrix.col(i), ICL_DEF);
+            distinct(*this, matrix.row(i), opt.icl());
+            distinct(*this, matrix.col(i), opt.icl());
         }
 
         // Quadrants
         for (int i = 0; i < 9; i += 3) {
             for (int j = 0; j < 9; j += 3) {
-                distinct(*this, matrix.slice(i, i+3, j, j+3), ICL_DEF);
+                distinct(*this, matrix.slice(i, i+3, j, j+3), opt.icl());
             }
         }
 
@@ -241,7 +242,7 @@ public:
         branch(*this, l, INT_VAR_SIZE_MIN, INT_VAL_MIN);
     }
 
-    Sudoku(bool share, Sudoku & s) : Space(share, s) {
+    Sudoku(bool share, Sudoku & s) : Script(share, s) {
         l.update(*this, share, s.l);
     }
 
@@ -249,42 +250,32 @@ public:
         return new Sudoku(share, *this);
     }
 
-    void print(void) const {
+    virtual void print(std::ostream& os) const {
         for (int i = 0; i < 9; ++i) {
             for (int j = 0; j < 9; ++j) {
                 if (l[i].assigned()) {
-                    std::cout << l[j * 9 + i] << " ";
+                    os << l[j * 9 + i] << " ";
                 } else {
-                    std::cout << "X ";
+                    os << "X ";
                 }
                 if ((j+1) % 3 == 0) {
-                    std::cout << " ";
+                    os << " ";
                 }
             }
             if ((i+1) % 3 == 0) {
-                std::cout << std::endl;
+                os << std::endl;
             }
-            std::cout << std::endl;
+            os << std::endl;
         }
-        std::cout << std::endl;
+        os << std::endl;
     }
 };
 
 // main function
 int main(int argc, char* argv[]) {
-    for (int i = 0; i < 18; ++i) {
-        std::cout << "Example: " << (i+1) << std::endl;
-        Sudoku* initial = new Sudoku(i);
-        DFS<Sudoku> search(initial);
-        delete initial;
-        if (Sudoku* solution = search.next()) {
-            solution->print();
-            delete solution;
-        } else {
-            std::cout << "No solution" << std::endl;
-        }
-    }
+    SizeOptions opt("Sudoku");
+    opt.size(0); // Size acts as the test case to run...
+    opt.parse(argc, argv);
+    Script::run<Sudoku, DFS, SizeOptions>(opt);
     return 0;
 }
-
-

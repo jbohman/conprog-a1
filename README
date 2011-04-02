@@ -1,0 +1,4 @@
+Sudoku
+======
+make sudoku
+./sudoku N (0 <= N <= 17)
