@@ -2,3 +2,8 @@ Sudoku
 ======
 make sudoku
 ./sudoku N (0 <= N <= 17)
+
+Queens
+======
+make binary_queens
+./binary_queens N
