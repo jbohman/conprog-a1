@@ -50,7 +50,7 @@ class Queens : public Script {
                 count(*this, dia, 1, IRT_LQ, 1);
             }
 
-            branch(*this, q, INT_VAR_RND, INT_VAL_RND);
+            branch(*this, q, INT_VAR_RND, INT_VAL_MAX);
         }
 
         Queens(bool share, Queens& s) : Script(share, s) {
