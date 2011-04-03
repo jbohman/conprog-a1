@@ -1,6 +1,7 @@
 #include <gecode/driver.hh>
 #include <gecode/int.hh>
 #include <gecode/minimodel.hh>
+#include <cstdio>
 
 using namespace Gecode;
 
@@ -26,7 +27,37 @@ public:
         }
        
         // Diagonal
+        for (int j = 0; j < opt.size(); ++j) {
+            IntVarArray dia(*this, opt.size()-j);
+            for (int i = 0; i+j < opt.size(); ++i) {
+                dia[i] = matrix(i+j, i);
+            }
+            count(*this, dia, 1, IRT_LQ, 1);
+        }
 
+        for (int j = 0; j < opt.size(); ++j) {
+            IntVarArray dia(*this, opt.size()-j);
+            for (int i = 0; i+j < opt.size(); ++i) {
+                dia[i] = matrix(i, i+j);
+            }
+            count(*this, dia, 1, IRT_LQ, 1);
+        }
+
+        for (int j = 0; j < opt.size(); ++j) {
+            IntVarArray dia(*this, opt.size()-j);
+            for (int i = 0; i+j < opt.size(); ++i) {
+                dia[i] = matrix((opt.size() - 1) - (i + j), i);
+            }
+            count(*this, dia, 1, IRT_LQ, 1);
+        }
+
+        for (int j = 0; j < opt.size(); ++j) {
+            IntVarArray dia(*this, opt.size()-j);
+            for (int i = 0; i+j < opt.size(); ++i) {
+                dia[i] = matrix((opt.size() - 1) - (i + 0), i + j);
+            }
+            count(*this, dia, 1, IRT_LQ, 1);
+        }
 
         branch(*this, q, INT_VAR_SIZE_MIN, INT_VAL_MIN);
     }
@@ -42,7 +73,7 @@ public:
     virtual void print(std::ostream& os) const {
         os << "queens\t";
         for (int i = 0; i < q.size(); i++) {
-            os << q[i] << ", ";
+            os << q[i] << " ";
             if ((i+1) % 10 == 0) {
                 os << std::endl << "\t";
             }
