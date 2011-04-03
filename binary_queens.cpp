@@ -6,13 +6,10 @@
 using namespace Gecode;
 
 class Queens : public Script {
-    private:
-        int n;
     protected:
         IntVarArray q;
     public:
         Queens(const SizeOptions& opt) : q(*this, opt.size() * opt.size(), 0, 1) {
-            n = opt.size();
             Matrix<IntVarArray> matrix(q, opt.size(), opt.size());
 
             // // Start values
@@ -77,7 +74,7 @@ class Queens : public Script {
             os << "queens\t";
             for (int i = 0; i < q.size(); i++) {
                 os << q[i] << " ";
-                if ((i+1) % n == 0) {
+                if ((i+1) % (int)sqrt(q.size()) == 0) {
                     os << std::endl << "\t";
                 }
             }
@@ -88,7 +85,7 @@ class Queens : public Script {
 int main(int argc, char* argv[]) {
     SizeOptions opt("Queens");
     //opt.iterations(500);
-    opt.size(8);
+    opt.size(10);
     //opt.propagation(Queens::PROP_DISTINCT);
     //opt.propagation(Queens::PROP_BINARY, "binary", "only binary disequality constraints");
     //opt.propagation(Queens::PROP_MIXED, "mixed", "single distinct and binary disequality constraints");
